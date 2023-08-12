@@ -1,0 +1,35 @@
+---
+include:
+  - project: "Bigouden/gitlab-ci-templates"
+    file: ".gitlab-ci-docker.yml"
+
+.services:
+  services:
+    - name: $CONTAINER_TEST_IMAGE
+      alias: csp-reports
+  image: $CONTAINER_CLIENT_IMAGE
+  before_script:
+    - apk add --no-cache --update curl
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+
+variables:
+  CI_DEBUG_SERVICES: "true"
+  CSP_REPORTS_SCHEME: "http"
+  CSP_REPORTS_PORT: "9999"
+
+stages:
+  - Quality
+  - Security
+  - Build
+  - Test
+  - Inspect
+  - Release
+  - Clean
+
+CSP Reports:
+  stage: Test
+  extends: .services
+  script:
+    - curl -f --connect-timeout 60 -d '{"key1":"value1"}' -H "Content-Type:application/csp-report" -X POST ${CSP_REPORTS_SCHEME}://csp-reports:${CSP_REPORTS_PORT}
