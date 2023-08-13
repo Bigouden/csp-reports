@@ -8,18 +8,37 @@ import logging
 import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from datetime import datetime
+import pytz
 
 # Global Variables
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+TIME_ZONE = os.environ.get("TIME_ZONE", "INFO").upper()
 
 # Logging Configuration
 try:
+    pytz.timezone(TIME_ZONE)
+    logging.Formatter.converter = lambda *args: datetime.now(
+        tz=pytz.timezone(TIME_ZONE)
+    ).timetuple()
     logging.basicConfig(
         stream=sys.stdout,
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%d/%m/%Y %H:%M:%S",
         level=LOG_LEVEL,
     )
+except pytz.exceptions.UnknownTimeZoneError:
+    logging.Formatter.converter = lambda *args: datetime.now(
+        tz=pytz.timezone("Europe/Paris")
+    ).timetuple()
+    logging.basicConfig(
+        stream=sys.stdout,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%d/%m/%Y %H:%M:%S",
+        level="INFO",
+    )
+    logging.error("TIME_ZONE invalid : %s !", TIME_ZONE)
+    os._exit(1)
 except ValueError:
     logging.basicConfig(
         stream=sys.stdout,
@@ -27,8 +46,8 @@ except ValueError:
         datefmt="%d/%m/%Y %H:%M:%S",
         level="INFO",
     )
-    logging.error("LOGLEVEL invalid !")
-    sys.exit(1)
+    logging.error("LOG_LEVEL invalid !")
+    os._exit(1)
 
 # HTTP Port Verification
 try:
@@ -84,8 +103,8 @@ class PostHandler(BaseHTTPRequestHandler):
 # Main Program
 if __name__ == "__main__":
     logging.info("Starting HTTP Server on port: %s.", HTTP_PORT)
-    logging.debug("Log_Level: %s", LOG_LEVEL)
-    logging.debug("HTTP_Port: %s", HTTP_PORT)
+    logging.debug("LOG LEVEL: %s", LOG_LEVEL)
+    logging.debug("HTTP PORT: %s", HTTP_PORT)
+    logging.debug("TIME ZONE: %s", TIME_ZONE)
     httpd = HTTPServer(("0.0.0.0", HTTP_PORT), PostHandler)  # nosec B104
-
     httpd.serve_forever()
