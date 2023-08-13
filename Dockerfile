@@ -3,7 +3,7 @@
 ARG ALPINE_VERSION="3.18"
 
 FROM alpine:${ALPINE_VERSION} AS builder
-COPY apk_packages /tmp/
+COPY apk_packages pip_packages /tmp/
 # hadolint ignore=DL3018
 RUN --mount=type=cache,id=builder_apk_cache,target=/var/cache/apk \
     apk add gettext-envsubst
@@ -13,6 +13,7 @@ LABEL maintainer="Thomas GUIRRIEC <thomas@guirriec.fr>"
 ENV DOCKER_HOST="unix:///var/run/docker.sock"
 ENV HTTP_PORT="9999"
 ENV LOG_LEVEL="INFO"
+ENV TIME_ZONE="Europe/Paris"
 ENV LABEL_PREFIX="csp-reports"
 ENV SCRIPT="csp_reports.py"
 ENV USERNAME="csp-reports"
@@ -28,6 +29,7 @@ RUN --mount=type=bind,from=builder,source=/usr/bin/envsubst,target=/usr/bin/envs
     --mount=type=cache,id=pip_cache,target=/root/.cache \
     apk --update add `envsubst < /tmp/apk_packages` \
     && python3 -m venv "${VIRTUAL_ENV}" \
+    && pip install --no-dependencies --no-binary :all: `envsubst < /tmp/pip_packages` \
     && pip uninstall -y setuptools pip \
     && useradd -l -u "${UID}" -U -s /bin/sh "${USERNAME}"
 COPY --chmod=755 ${SCRIPT} ${VIRTUAL_ENV}
