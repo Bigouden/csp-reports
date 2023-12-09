@@ -76,7 +76,7 @@ def handle(request):
 
 
 # Class Definition
-class PostHandler(BaseHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
     """POST Handler Class"""
 
     server_version = ""
@@ -101,6 +101,11 @@ class PostHandler(BaseHTTPRequestHandler):
         self.wfile.write(data.encode())
         logging.info(data)
 
+    def do_GET(self):
+        """Handle HTTP GET Request"""
+        self._set_headers(405)
+        self.wfile.write(b'Method Not Allowed - GET not supported')
+
 
 # Main Program
 if __name__ == "__main__":
@@ -108,5 +113,5 @@ if __name__ == "__main__":
     logging.debug("LOG LEVEL: %s", LOG_LEVEL)
     logging.debug("HTTP PORT: %s", HTTP_PORT)
     logging.debug("TIME ZONE: %s", TIME_ZONE)
-    httpd = HTTPServer(("0.0.0.0", HTTP_PORT), PostHandler)  # nosec B104
+    httpd = HTTPServer(("0.0.0.0", HTTP_PORT), Handler)  # nosec B104
     httpd.serve_forever()
