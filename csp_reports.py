@@ -7,8 +7,9 @@ import json
 import logging
 import os
 import sys
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import pytz
 
 # Global Variables
