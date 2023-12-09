@@ -104,7 +104,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handle HTTP GET Request"""
         self._set_headers(405)
-        self.wfile.write(b'Method Not Allowed - GET not supported')
+        self.wfile.write(b"Method Not Allowed - GET not supported")
 
 
 # Main Program
