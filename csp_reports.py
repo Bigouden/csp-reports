@@ -86,7 +86,7 @@ class PostHandler(BaseHTTPRequestHandler):
         """Manage HTTP Headers & HTTP Code"""
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
-        self.send_header("X-Content-Type", "nosniff")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
 
     def log_message(self, format, *args):
