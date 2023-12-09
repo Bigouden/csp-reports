@@ -2,6 +2,8 @@
 include:
   - project: "Bigouden/gitlab-ci-templates"
     file: ".gitlab-ci-docker.yml"
+  - project: "Bigouden/gitlab-ci-templates"
+    file: ".gitlab-ci-owasp-zap.yml"
 
 .services:
   services:
@@ -18,6 +20,7 @@ variables:
   CI_DEBUG_SERVICES: "true"
   CSP_REPORTS_SCHEME: "http"
   CSP_REPORTS_PORT: "9999"
+  OWASP_ZAP_TARGET: "${CSP_REPORTS_SCHEME}://target:${CSP_REPORTS_PORTT}"
 
 stages:
   - Quality
