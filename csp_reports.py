@@ -79,13 +79,14 @@ def handle(request):
 class PostHandler(BaseHTTPRequestHandler):
     """POST Handler Class"""
 
-    server_version = "CSP Reports"
-    sys_version = "Docker"
+    server_version = ""
+    sys_version = ""
 
     def _set_headers(self, code):
         """Manage HTTP Headers & HTTP Code"""
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
+        self.send_header("X-Content-Type", "nosniff")
         self.end_headers()
 
     def log_message(self, format, *args):
